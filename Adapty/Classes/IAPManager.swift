@@ -106,18 +106,16 @@ class IAPManager: NSObject {
     }
     
     private func getPaywallsAndSyncProducts() {
-        var topOffset: CGFloat = 0
-        
         #if os(iOS)
         if !Thread.isMainThread {
-            DispatchQueue.main.sync {
-                topOffset = UIApplication.topOffset
+            DispatchQueue.main.async {
+                self.getPaywallsAndSyncProducts()
             }
-        } else {
-            topOffset = UIApplication.topOffset
+            return
         }
         #endif
         
+        let topOffset = UIApplication.topOffset
         let params: Parameters = ["profile_id": profileId, "paywall_padding_top": topOffset, "automatic_paywalls_screen_reporting_enabled": false]
 
         paywallsRequest = apiManager.getPaywalls(params: params) { (paywalls, products, error) in
